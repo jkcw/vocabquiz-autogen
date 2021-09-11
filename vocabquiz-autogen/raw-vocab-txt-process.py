@@ -1,6 +1,5 @@
 import json
 
-
 text_file = open("res.txt", "r")
 res_file = open("res-no-blanks.txt", "w")
 res = []
