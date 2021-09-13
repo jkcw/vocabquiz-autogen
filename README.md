@@ -3,4 +3,6 @@ It automatically generates vocabulary quiz including questions and answers for E
 
 ## How to use
 
+## Mode
+
 ## Features
