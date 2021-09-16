@@ -1,5 +1,5 @@
 # Dictionanry Secret Key
-secret-key.py
+vocabquiz-autogen/secretKey.py
 
 # Django #
 *.log
