@@ -1,33 +1,34 @@
 import requests
 import json
+import random
+
+from . import secretKey
+
+print(secret_key)
+
+# TODO: get some of questions only, not all.
+# TODO: present tense, verbs with "s"
+# TODO: full stop of each sentence
+# TODO: will print the error msg out "error:rm_answer_to_blank"
+# TODO: quality of the dictionary is too low
 
 # Load vocabulary list
-text_file = open("ietls-vocab-list.txt", "r")
+text_file = open("temp/ietls-vocab-list.txt", "r")
 vocab_list = json.load(text_file)
 
-last_vocab = "coffer"
+last_vocab = "yield"
 last_vocab_index = vocab_list.index(last_vocab)
+print(last_vocab_index)
 
 # Load tenses list
-tenses_file = open('tenses-list.json', "r")
+tenses_file = open('temp/tenses-list.json', "r")
 tenses_dict = json.load(tenses_file)
 
 
-class RequestVocabData:
-    def __init__(self, vocab):
-        self.vocab = vocab.lower()
-        self.js_dict = []
-        self.part_of_speech = []
-
-    def http_api_request(self):
-        api_request = requests.get('https://api.dictionaryapi.dev/api/v2/entries/en/' + self.vocab)
-        js = api_request.json()
-        self.js_dict = js[0]
-
-    def get_all_part_of_speech(self):
-        self.part_of_speech = self.js_dict["meanings"]
 
 
+
+# TODO
 class RequestDefTest(RequestVocabData):
     def __init__(self, vocab):
         super().__init__(vocab)
@@ -44,6 +45,7 @@ class RequestDefTest(RequestVocabData):
             partOfSpeech = pos['partOfSpeech']
 
 
+# TODO
 class RequestSynonymsTest(RequestVocabData):
     def __init__(self, vocab):
         super().__init__(vocab)
@@ -61,7 +63,7 @@ class RequestFillInTheBlanksTest(RequestVocabData):
         try:
             tenses = tenses_dict[self.vocab]
             for tense in tenses:
-                if tense in sentence:
+                if tense in sentence.split():
                     sentence = sentence.replace(tense, self.blank)
                     return {"tense": tense, "question": sentence}
             return {"tense": "error:rm_answer_to_blank", "question": "error:rm_answer_to_blank"}
@@ -93,7 +95,11 @@ class RequestFillInTheBlanksTest(RequestVocabData):
                 self.answer += temp_answer
 
     def get_fill_in_the_blanks_test(self):
-        self.http_api_request()
+        if not self.http_api_request():
+            return {
+                'question': "Error:" + self.vocab,
+                'answer': "Error:" + self.vocab
+            }
         self.get_all_part_of_speech()
         self.json_to_readable_text()
         return {
@@ -101,11 +107,26 @@ class RequestFillInTheBlanksTest(RequestVocabData):
             'answer': self.answer
         }
 
+"""
+index_list = random.sample(range(500, last_vocab_index), 40)
 
-test = RequestFillInTheBlanksTest("get")
-res = test.get_fill_in_the_blanks_test()
-print("Question:\n" + res['question'])
-print("Answer:\n" + res['answer'])
+temp_qes = ""
+temp_ans = ""
+n = 1
+for index in index_list:
+    print(n)
+    request_obj = RequestFillInTheBlanksTest(vocab_list[index])
+    result = request_obj.get_fill_in_the_blanks_test()
+
+    if len(result['question']) > 0:
+        temp_qes += result['question']
+        temp_ans += result['answer']
+
+    n += 1
+
+print("Question:\n" + temp_qes)
+print("Answer:\n" + temp_ans)
+"""
 
 
 
